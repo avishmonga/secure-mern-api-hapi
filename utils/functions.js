@@ -1,4 +1,5 @@
 const crypto = require('crypto');
+require('dotenv').config(); // Ensure dotenv is loaded
 
 const algorithm = 'aes-256-cbc';
 const secretKey = crypto.scryptSync(

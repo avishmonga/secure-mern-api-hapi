@@ -79,6 +79,17 @@ const init = async () => {
 
   await registerRoutes(server);
   await db.sequelize.sync(); // Sync  database models
+
+  // Global error handling
+  server.ext('onPreResponse', (request, h) => {
+    const response = request.response;
+    if (response.isBoom) {
+      return h
+        .response(response.output.payload)
+        .code(response.output.statusCode);
+    }
+    return h.continue;
+  });
   await server.start();
   console.log('Server running on %s', server.info.uri);
   console.log('Documentation is running on %s/documentation', server.info.uri);
