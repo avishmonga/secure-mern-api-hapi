@@ -43,7 +43,7 @@ const validate = async (decoded, request, h) => {
 const init = async () => {
   const server = Hapi.server({
     port: config.port,
-    host: 'localhost',
+    host: config.host,
   });
   await server.register(Jwt);
 
