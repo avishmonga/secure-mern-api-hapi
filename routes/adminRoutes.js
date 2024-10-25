@@ -1,5 +1,5 @@
 const { getAllPIIs } = require('../controllers/PIIController');
-const UserController = require('../controllers/UserController');
+const UserController = require('../controllers/userController');
 const { authorize } = require('../middleware/authMiddleware');
 const Joi = require('joi');
 

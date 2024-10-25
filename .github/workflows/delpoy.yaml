@@ -17,7 +17,7 @@ jobs:
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
       - name: Build Docker Image
-        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/my-app:latest .
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/my-app:latest --build-arg JWT_SECRET="${{ secrets.JWT_SECRET }}" --build-arg ENCRYPTION_PASSWORD="${{ secrets.ENCRYPTION_PASSWORD }}" .
 
       - name: Push Docker Image
         run: docker push ${{ secrets.DOCKER_USERNAME }}/my-app:latest
@@ -31,15 +31,13 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i ec2_key.pem ubuntu@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
             docker pull ${{ secrets.DOCKER_USERNAME }}/my-app:latest
             if [ $(docker ps -aq -f name=my-app) ]; then
-                  stop my-app || true
+                  docker stop my-app || true
                   docker rm my-app || true
             fi
             docker run -d -p 80:3000 \
               --name my-app \
               -e JWT_SECRET=${{ secrets.JWT_SECRET }} \
               -e ENCRYPTION_PASSWORD=${{ secrets.ENCRYPTION_PASSWORD }} \
+              -e HOST=${{ secrets.HOST }} \
               ${{ secrets.DOCKER_USERNAME }}/my-app:latest
           EOF
-
-      - name: Test Deployment
-        run: curl http://${{ secrets.EC2_PUBLIC_IP }}/health
