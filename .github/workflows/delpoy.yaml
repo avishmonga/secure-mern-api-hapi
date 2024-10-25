@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Log in to Docker Hub
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
@@ -21,13 +21,19 @@ jobs:
 
       - name: Push Docker Image
         run: docker push ${{ secrets.DOCKER_USERNAME }}/my-app:latest
+      - name: Create SSH Key File
+        run: |
+          echo "${{ secrets.EC2_SSH_KEY }}" > ec2_key.pem  # Write the SSH key to a file
+          chmod 600 ec2_key.pem  # Set permissions for the key file
 
       - name: SSH to EC2 and Deploy
         run: |
-          ssh -o StrictHostKeyChecking=no -i ${{ secrets.EC2_SSH_KEY }} ubuntu@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no -i ec2_key.pem ubuntu@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
             docker pull ${{ secrets.DOCKER_USERNAME }}/my-app:latest
-            docker stop my-app || true
-            docker rm my-app || true
+            if [ $(docker ps -aq -f name=my-app) ]; then
+                  stop my-app || true
+                  docker rm my-app || true
+            fi
             docker run -d -p 80:3000 \
               --name my-app \
               -e JWT_SECRET=${{ secrets.JWT_SECRET }} \

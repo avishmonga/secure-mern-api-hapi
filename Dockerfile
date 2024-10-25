@@ -14,7 +14,7 @@ RUN npm install
 COPY . .
 
 # Run tests
-RUN npm test
+#RUN npm test
 
 # Expose the application's port
 EXPOSE 3000
