@@ -9,6 +9,7 @@ const fs = require('fs');
 const path = require('path');
 const db = require('./models');
 const User = db.User;
+const Joi = require('joi');
 
 const registerRoutes = async (server) => {
   const routesPath = path.join(__dirname, 'routes');
@@ -41,7 +42,7 @@ const validate = async (decoded, request, h) => {
 };
 const init = async () => {
   const server = Hapi.server({
-    port: 3000,
+    port: config.port,
     host: 'localhost',
   });
   await server.register(Jwt);
@@ -77,6 +78,24 @@ const init = async () => {
     },
   ]);
 
+  // Health check route
+  server.route({
+    method: 'GET',
+    path: '/health',
+    options: {
+      auth: false,
+      tags: ['api', 'health'], // Swagger tags
+      description: 'Health check endpoint',
+      response: {
+        schema: Joi.object({
+          status: Joi.string().required(),
+        }),
+      },
+    },
+    handler: async (request, h) => {
+      return h.response({ status: 'OK' }).code(200);
+    },
+  });
   await registerRoutes(server);
   await db.sequelize.sync(); // Sync  database models
 
