@@ -16,6 +16,12 @@ module.exports = [
           password: Joi.string().min(8).required(),
         }),
       },
+      plugins: {
+        'hapi-rate-limitor': {
+          max: 10,
+          duration: 60 * 1000, // per minute
+        },
+      },
     },
     handler: signup,
   },
@@ -31,6 +37,12 @@ module.exports = [
           email: Joi.string().email().required(),
           password: Joi.string().min(8).required(),
         }),
+      },
+      plugins: {
+        'hapi-rate-limitor': {
+          max: 10,
+          duration: 60 * 1000, // per minute
+        },
       },
     },
     handler: login,

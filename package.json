@@ -16,6 +16,7 @@
     "bcrypt": "^5.1.1",
     "dotenv": "^16.4.5",
     "hapi-auth-jwt2": "^10.6.0",
+    "hapi-rate-limitor": "^4.0.0",
     "hapi-swagger": "^17.3.0",
     "jsonwebtoken": "^9.0.2",
     "sequelize": "^6.37.4",

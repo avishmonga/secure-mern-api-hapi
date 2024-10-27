@@ -10,6 +10,7 @@ const path = require('path');
 const db = require('./models');
 const User = db.User;
 const Joi = require('joi');
+const RateLimiter = require('hapi-rate-limitor');
 
 const registerRoutes = async (server) => {
   const routesPath = path.join(__dirname, 'routes');
@@ -40,6 +41,33 @@ const validate = async (decoded, request, h) => {
     return { isValid: false };
   }
 };
+
+const swaggerOpts = {
+  info: {
+    title: 'Secure MERN API documentation',
+    description:
+      'This API has a rate limit of 10 request per minute for login and signup and  50 requests per hour per user for other routes. If the limit is exceeded, a 429 Too Many Requests response will be returned.',
+    version: '1.0.0',
+  },
+  securityDefinitions: {
+    jwt: {
+      type: 'apiKey',
+      name: 'Authorization',
+      in: 'header',
+    },
+  },
+  security: [{ jwt: [] }],
+};
+const rateLimiterOpts = {
+  redis: {
+    port: 6379,
+    host: config.redisHost,
+  },
+  userAttribute: 'id',
+  userLimitAttribute: 'rateLimit',
+  max: 50,
+  duration: 60 * 60 * 1000, // per hour
+};
 const init = async () => {
   const server = Hapi.server({
     port: config.port,
@@ -55,26 +83,16 @@ const init = async () => {
 
   server.auth.default('jwt');
 
-  const swaggerOpts = {
-    info: {
-      title: 'Secure MERN API documentation',
-      version: '1.0.0',
-    },
-    securityDefinitions: {
-      jwt: {
-        type: 'apiKey',
-        name: 'Authorization',
-        in: 'header',
-      },
-    },
-    security: [{ jwt: [] }],
-  };
   await server.register([
     Inert,
     Vision,
     {
       plugin: Hapiswagger,
       options: swaggerOpts,
+    },
+    {
+      plugin: RateLimiter,
+      options: rateLimiterOpts,
     },
   ]);
 
