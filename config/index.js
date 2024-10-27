@@ -5,7 +5,11 @@ module.exports = {
   host: process.env.HOST || 'localhost',
   redisHost: process.env.REDIS_HOST || 'localhost',
   database: {
-    dialect: 'sqlite',
-    storage: './database.sqlite',
+    dialect: 'postgres',
+    host: process.env.DB_HOST || 'localhost',
+    port: process.env.DB_PORT || 5432,
+    username: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    database: process.env.DB_NAME,
   },
 };

@@ -49,6 +49,11 @@ jobs:
               -e ENCRYPTION_PASSWORD=${{ secrets.ENCRYPTION_PASSWORD }} \
               -e HOST=${{ secrets.HOST }} \
               -e REDIS_HOST=${{ secrets.REDIS_HOST }} \
+              -e DB_HOST=${{ secrets.DB_HOST }} \
+              -e DB_PORT=${{ secrets.DB_PORT }} \
+              -e DB_USER=${{ secrets.DB_USER }} \
+              -e DB_PASS=${{ secrets.DB_PASS }} \
+              -e DB_NAME=${{ secrets.DB_NAME }} \
               ${{ secrets.DOCKER_USERNAME }}/my-app:latest
           EOF
       - name: Test Deployment
