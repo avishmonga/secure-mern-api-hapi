@@ -10,7 +10,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@hapi/hapi": "^21.3.11",
+    "@hapi/hapi": "^21.3.12",
     "@hapi/inert": "^7.1.0",
     "@hapi/vision": "^7.0.3",
     "bcrypt": "^5.1.1",
@@ -19,8 +19,13 @@
     "hapi-rate-limitor": "^4.0.0",
     "hapi-swagger": "^17.3.0",
     "jsonwebtoken": "^9.0.2",
-    "sequelize": "^6.37.4",
+    "sequelize": "^6.37.5",
     "sqlite3": "^5.1.7"
+  },
+  "overrides": {
+    "cookie": "0.7.0",
+    "glob": "11.0.0",
+    "inflight": "1.0.7"
   },
   "devDependencies": {
     "jest": "^29.7.0"
